@@ -1,0 +1,1380 @@
+[
+  {
+    "id": "c5abf5a0",
+    "created_at": "2026-04-13T09:00:36.647047",
+    "scenario_name": "Ransomware-variant",
+    "fingerprint_hash": "1ed9a5f567eb5fd0",
+    "mitre_techniques": [
+      "T1486"
+    ],
+    "attack_vector": "Credential Theft",
+    "payload_characteristics": [
+      "Deletes shadow copies",
+      "Encrypts files for ransom"
+    ],
+    "behavioral_patterns": [
+      "Scans for domain controllers and critical servers",
+      "Attempts to disable security controls like antivirus and EDR",
+      "Executes vssadmin.exe to delete shadow copies"
+    ],
+    "countermeasures_applied": [
+      "Blocked attacker IPs",
+      "Terminated vssadmin.exe processes",
+      "Restricted RDP and service control access to DCs and critical servers",
+      "Enforced MFA on all accounts",
+      "Quarantined ransomware executables"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Ransomware attack in progress, with attacker attempting to delete shadow copies and encrypt files for ransom. Countermeasures applied were mostly effective in containing the threat.",
+    "key_iocs": [
+      "vssadmin delete shadows",
+      "Shadow copy deletion"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This ransomware group may evolve their tactics to bypass security controls, such as using new methods to disable endpoint protection or finding alternative ways to delete shadow copies. Future variants may use different encryption algorithms or target additional critical systems beyond just data files."
+  },
+  {
+    "id": "9c8705d3",
+    "created_at": "2026-04-13T09:11:37.339296",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "f4b6b69c4ddc8673",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "system compromise",
+    "payload_characteristics": [
+      "cryptominer process",
+      "xmrig"
+    ],
+    "behavioral_patterns": [
+      "CPU spike to 100%",
+      "mining pool connection",
+      "unusual outbound port 3333"
+    ],
+    "countermeasures_applied": [
+      "block_ip mining pool connection",
+      "kill_process cryptominer process",
+      "firewall_rule Inbound port 3333",
+      "patch_vulnerability System startup configuration",
+      "revoke_credentials Network accounts"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Cryptomining malware infected the system, hijacking resources to mine cryptocurrency for the attacker's benefit. Countermeasures were effective at stopping the current activity, but the threat may evolve.",
+    "key_iocs": [
+      "cryptominer process",
+      "xmrig",
+      "mining pool connection",
+      "port 3333"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "The attacker group may evolve their cryptomining malware to evade the applied countermeasures, such as using new mining pool connections, alternate network ports, or techniques to persist through system startup configuration changes."
+  },
+  {
+    "id": "0f6c9f97",
+    "created_at": "2026-04-13T09:21:43.609308",
+    "scenario_name": "APT-SSH-Brute-Force",
+    "fingerprint_hash": "6767167e622f42b0",
+    "mitre_techniques": [
+      "T1078",
+      "T1110"
+    ],
+    "attack_vector": "Targeted SSH brute-force attacks",
+    "payload_characteristics": [
+      "Multiple failed login attempts",
+      "Authentication from unusual locations",
+      "Off-hours access attempts"
+    ],
+    "behavioral_patterns": [
+      "Lateral movement attempts",
+      "Privilege escalation attempts",
+      "Suspicious domain controller access"
+    ],
+    "countermeasures_applied": [
+      "Block IP addresses with multiple failed logins",
+      "Disable compromised user accounts",
+      "Firewall rule to block non-domain systems from domain controllers",
+      "Isolate suspected compromised hosts",
+      "Alert SOC team"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Sophisticated cybercriminal group targeting SSH access to establish persistent network presence and move laterally, with potential for data breach or financial theft.",
+    "key_iocs": [
+      "Brute force SSH attempts",
+      "Off-hours authentication",
+      "Multiple failed logins",
+      "Unusual login locations"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This threat group is likely to continue evolving their SSH brute-force techniques, potentially incorporating more advanced methods like password spraying, credential stuffing, or even exploiting vulnerabilities in the SSH implementation. Tracking behavioral patterns like lateral movement attempts and unusual domain controller access will be key to detecting future variants."
+  },
+  {
+    "id": "46e3e996",
+    "created_at": "2026-04-13T09:23:06.028694",
+    "scenario_name": "APT-Credential-Harvest",
+    "fingerprint_hash": "4146ca54559a4c6a",
+    "mitre_techniques": [
+      "T1003"
+    ],
+    "attack_vector": "Exploitation",
+    "payload_characteristics": [
+      "mimikatz",
+      "lsass dump",
+      "procdump -ma lsass"
+    ],
+    "behavioral_patterns": [
+      "Targeted credential dumping",
+      "Lateral movement via stolen credentials",
+      "Attempt to gain persistent, privileged access"
+    ],
+    "countermeasures_applied": [
+      "Block IP addresses associated with credential dumping tools",
+      "Terminate LSASS process on domain controllers",
+      "Enforce MFA on privileged accounts",
+      "Patch CVE-2021-34473 and CVE-2022-37958",
+      "Block SMB/Windows Admin Shares access to domain controllers"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Sophisticated criminal group attempted to gain persistent, privileged access to the network by harvesting credentials through a targeted credential dumping attack.",
+    "key_iocs": [
+      "mimikatz",
+      "lsass dump",
+      "procdump -ma lsass"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This threat group is likely to evolve their techniques to bypass the applied countermeasures, such as using new credential dumping tools or finding alternative lateral movement methods. Monitoring for new variants of the group's tools and techniques will be crucial."
+  },
+  {
+    "id": "7781c239",
+    "created_at": "2026-04-13T09:23:53.263770",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "9fd95e3c9344082a",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "Unknown initial access vector",
+    "payload_characteristics": [
+      "mining pool connection",
+      "cryptominer process (e.g. xmrig)",
+      "unusual outbound port 3333 for C2"
+    ],
+    "behavioral_patterns": [
+      "100% CPU utilization on victim system",
+      "Outbound traffic to cryptocurrency mining pools",
+      "Persistence on victim system to mine indefinitely"
+    ],
+    "countermeasures_applied": [
+      "Block mining pool IPs/domains",
+      "Terminate cryptominer processes",
+      "Firewall rule for C2 port 3333",
+      "Deploy security patches",
+      "Enable MFA on domain controllers"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Advanced cybercriminal group using sophisticated cryptominer malware to monetize victim's computing resources through illicit cryptocurrency mining.",
+    "key_iocs": [
+      "mining pool connection",
+      "cryptominer process",
+      "unusual port 3333"
+    ],
+    "similar_dna_ids": [
+      "9c8705d3"
+    ],
+    "prediction_for_variants": "This threat actor group is known for constantly evolving their cryptominer malware to evade detection. We should expect to see new variants emerge that utilize different mining pools, C2 infrastructure, and persistence mechanisms. Ongoing monitoring of mining-related IOCs and behavioral patterns will be critical."
+  },
+  {
+    "id": "ee7ffb7b",
+    "created_at": "2026-04-13T09:59:45.552014",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "2ec5b38c1605b854",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "Malware infection via undisclosed vector",
+    "payload_characteristics": [
+      "Cryptomining malware",
+      "xmrig process",
+      "Network traffic to known mining pools"
+    ],
+    "behavioral_patterns": [
+      "100% CPU utilization on infected hosts",
+      "Outbound connections to mining pools on port 3333",
+      "Persistence via logon script execution"
+    ],
+    "countermeasures_applied": [
+      "Block outbound traffic to mining pools",
+      "Terminate cryptominer processes",
+      "Revoke execution privileges for logon scripts",
+      "Block lateral RDP movement"
+    ],
+    "effectiveness_score": 0.9,
+    "incident_summary": "Cryptominer malware has infected the target system, hijacking system resources to mine cryptocurrency for the attacker's financial gain.",
+    "key_iocs": [
+      "Cryptominer process",
+      "Mining pool connections",
+      "Unusual outbound port 3333"
+    ],
+    "similar_dna_ids": [
+      "7781c239",
+      "9c8705d3"
+    ],
+    "prediction_for_variants": "Cybercriminal actors may attempt to evolve their cryptomining malware to become more stealthy, resilient, and difficult to detect and remediate. Variants could include advanced anti-analysis techniques, improved persistence mechanisms, and expanded targeting of cloud and IoT infrastructure."
+  },
+  {
+    "id": "5006aa7c",
+    "created_at": "2026-04-20T01:11:31.593931",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "9194f6a57b693f43",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "Remote code execution or initial access via unpatched vulnerabilities",
+    "payload_characteristics": [
+      "xmrig",
+      "CPU spike to 100%",
+      "cryptocurrency mining activity"
+    ],
+    "behavioral_patterns": [
+      "Attempts to establish connection to known cryptocurrency mining pools",
+      "Spawns cryptominer process (e.g. xmrig) to hijack system resources for mining",
+      "Unusual outbound network traffic on port 3333"
+    ],
+    "countermeasures_applied": [
+      "Block mining pool connection IPs",
+      "Terminate cryptominer process",
+      "Block outbound port 3333",
+      "Isolate compromised host",
+      "Patch vulnerable software/services"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Adversary deployed a cryptominer on a victim system to illicitly generate cryptocurrency revenue by hijacking system resources.",
+    "key_iocs": [
+      "mining pool connection",
+      "cryptominer process",
+      "xmrig",
+      "unusual outbound port 3333",
+      "CPU spike to 100%"
+    ],
+    "similar_dna_ids": [
+      "9c8705d3",
+      "7781c239",
+      "ee7ffb7b"
+    ],
+    "prediction_for_variants": "Cryptojacking actors are likely to continue evolving their techniques to evade detection, such as by using domain fronting to conceal the mining pool connection, obfuscating the cryptominer process, or targeting more types of cryptocurrency. Organizations should monitor for behavioural patterns and IOCs that indicate evolving cryptomining threats."
+  },
+  {
+    "id": "8935d7ef",
+    "created_at": "2026-04-20T01:15:58.677681",
+    "scenario_name": "Ransomware - Sophisticated Cybercrime Group",
+    "fingerprint_hash": "96209d856122e50d",
+    "mitre_techniques": [
+      "T1059",
+      "T1027",
+      "T1071"
+    ],
+    "attack_vector": "Initial access through unpatched software vulnerabilities",
+    "payload_characteristics": [
+      "Powershell-based payload",
+      "Base64 encoded",
+      "Encrypted C2 communication over HTTPS and DNS"
+    ],
+    "behavioral_patterns": [
+      "Command-line obfuscation",
+      "Fileless malware execution",
+      "Lateral movement using Mimikatz",
+      "Encrypted/covert C2 channels"
+    ],
+    "countermeasures_applied": [
+      "Blocking C2 IPs",
+      "Terminating script interpreters",
+      "Patching software vulnerabilities",
+      "Enforcing MFA",
+      "Alerting SOC"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Sophisticated cybercrime group deployed a Powershell-based ransomware payload that used command-line obfuscation, encrypted C2 channels, and lateral movement techniques to infect systems and encrypt files. The incident was partially contained through a combination of network, endpoint, and identity-based controls.",
+    "key_iocs": [
+      "Powershell -enc command",
+      "Unusual User-Agent strings",
+      "Base64 encoded payloads",
+      "DNS-based C2 communication",
+      "Mimikatz process"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This threat group is known to rapidly evolve their ransomware payloads and TTPs to bypass defenses. We can expect to see variants with improved anti-analysis techniques, expanded target lists, and potentially the addition of double-extortion tactics (data theft and leak) in future attacks."
+  },
+  {
+    "id": "89e1235f",
+    "created_at": "2026-04-20T01:18:23.078208",
+    "scenario_name": "APT-credential-theft",
+    "fingerprint_hash": "08069116b77d6e37",
+    "mitre_techniques": [
+      "T1003"
+    ],
+    "attack_vector": "Enterprise system exploitation",
+    "payload_characteristics": [
+      "Procdump dump of LSASS process",
+      "Mimikatz credential theft"
+    ],
+    "behavioral_patterns": [
+      "Targeted credential-stealing techniques",
+      "Lateral movement to critical servers",
+      "Use of advanced tooling and capabilities"
+    ],
+    "countermeasures_applied": [
+      "Block IP addresses used for credential dumping",
+      "Disable accounts involved in credential theft",
+      "Patch critical vulnerabilities",
+      "Restrict remote access to key servers",
+      "Enable MFA for privileged accounts"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Sophisticated APT actor targeting enterprise systems to steal credentials and gain broader access for large-scale data exfiltration or ransomware encryption.",
+    "key_iocs": [
+      "procdump -ma lsass",
+      "lsass dump",
+      "mimikatz"
+    ],
+    "similar_dna_ids": [
+      "46e3e996"
+    ],
+    "prediction_for_variants": "This threat actor group is known to rapidly adapt their tools and techniques. We can expect to see variants that bypass IP blocklists, target new vulnerabilities, or leverage alternative credential theft methods in future incidents."
+  },
+  {
+    "id": "793b5774",
+    "created_at": "2026-04-20T01:19:00.620860",
+    "scenario_name": "APT_Intrusion",
+    "fingerprint_hash": "d31dcd020c837b21",
+    "mitre_techniques": [
+      "T1083",
+      "T1074"
+    ],
+    "attack_vector": "Unauthorized network access",
+    "payload_characteristics": [
+      "Data compression to temp folder",
+      "Large archive creation",
+      "Recursive directory listing"
+    ],
+    "behavioral_patterns": [
+      "Attempted data theft and exfiltration",
+      "Kerberoasting attacks for privilege escalation",
+      "Use of sophisticated toolset and tactics typical of APT groups"
+    ],
+    "countermeasures_applied": [
+      "Block IP addresses associated with data compression/exfiltration",
+      "Terminate processes involved in data compression/archiving",
+      "Implement firewall rules to block C2 infrastructure",
+      "Apply security patches for Kerberos vulnerabilities",
+      "Enable MFA for privileged accounts"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Advanced persistent threat (APT) group gained unauthorized access to the target network and attempted to exfiltrate sensitive data, but the response successfully disrupted the data theft and privilege escalation attempts.",
+    "key_iocs": [
+      "data compressed to temp folder",
+      "large archive created",
+      "recursive directory listing"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This APT group is known to evolve its toolset and tactics over time. We should expect to see variants that utilize different privilege escalation techniques, data exfiltration methods, and potentially new initial access vectors as they adapt to our defenses."
+  },
+  {
+    "id": "461c9f18",
+    "created_at": "2026-04-20T01:20:05.686112",
+    "scenario_name": "APT-intrusion",
+    "fingerprint_hash": "e28655ffa39e2559",
+    "mitre_techniques": [
+      "T1562"
+    ],
+    "attack_vector": "Sophisticated initial access to network",
+    "payload_characteristics": [
+      "Disabling antivirus",
+      "Tampering with Windows Defender"
+    ],
+    "behavioral_patterns": [
+      "Attempts to evade endpoint protection",
+      "Lateral movement between privileged systems",
+      "Focus on long-term persistence and data exfiltration"
+    ],
+    "countermeasures_applied": [
+      "Blocking associated IP addresses",
+      "Enforcing MFA on privileged accounts",
+      "Patching Zerologon vulnerability",
+      "Restricting network access between privileged systems",
+      "Escalating to IR team"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Sophisticated APT adversary gained network access, attempted to disable security controls and move laterally, but was largely contained through rapid response.",
+    "key_iocs": [
+      "antivirus disabled",
+      "Set-MpPreference -DisableRealtimeMonitoring",
+      "CVE-2020-1472 (Zerologon)"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This APT group is likely to evolve their techniques to maintain persistence and evade detection, potentially through more advanced malware, lateral movement tactics, or targeting of additional security controls."
+  },
+  {
+    "id": "24affa5d",
+    "created_at": "2026-04-20T01:22:10.721988",
+    "scenario_name": "Ransomware-critical",
+    "fingerprint_hash": "80dc9037a8d5e93c",
+    "mitre_techniques": [
+      "T1486"
+    ],
+    "attack_vector": "Unpatched software vulnerability",
+    "payload_characteristics": [
+      "Encrypted files",
+      "Deleted shadow copies"
+    ],
+    "behavioral_patterns": [
+      "Deletes shadow copies to prevent data recovery",
+      "Encrypts critical files and demands ransom payment"
+    ],
+    "countermeasures_applied": [
+      "Block attacker IPs",
+      "Disable high-privilege accounts",
+      "Firewall access to critical systems",
+      "Quarantine shadow copy deletion tools",
+      "Patch vulnerabilities on critical servers"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Sophisticated ransomware attack on critical business systems, with the attacker's goal being financial extortion through data encryption and deletion of shadow copies. Key countermeasures successfully contained the attack but some disruption occurred.",
+    "key_iocs": [
+      "vssadmin delete shadows",
+      "Shadow copy deletion"
+    ],
+    "similar_dna_ids": [
+      "c5abf5a0"
+    ],
+    "prediction_for_variants": "The threat actors behind this ransomware are likely to evolve their tactics and techniques to bypass the countermeasures applied in this incident. We should expect variants that use alternative methods for disabling backup and recovery capabilities, as well as potential advancements in their encryption algorithms and evasion of security controls."
+  },
+  {
+    "id": "ad232534",
+    "created_at": "2026-04-20T01:26:40.098583",
+    "scenario_name": "apt_intrusion",
+    "fingerprint_hash": "834fed41b60e334a",
+    "mitre_techniques": [
+      "T1078",
+      "T1110"
+    ],
+    "attack_vector": "SSH brute force",
+    "payload_characteristics": [
+      "Credential harvesting",
+      "Network discovery",
+      "Privilege escalation"
+    ],
+    "behavioral_patterns": [
+      "Multiple failed login attempts",
+      "Logins from unusual geolocations",
+      "Off-hours authentication",
+      "Attempts to access sensitive servers"
+    ],
+    "countermeasures_applied": [
+      "Block IP address",
+      "Enforce MFA",
+      "Firewall rule to restrict access",
+      "Patch vulnerabilities",
+      "Alert SOC"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Sophisticated nation-state APT group conducted a network intrusion via SSH brute force attacks, attempting to gain persistent access for espionage and lateral movement.",
+    "key_iocs": [
+      "Unusual login locations",
+      "SSH brute force attempts",
+      "Failed login events",
+      "Access attempts to sensitive servers"
+    ],
+    "similar_dna_ids": [
+      "0f6c9f97"
+    ],
+    "prediction_for_variants": "This APT group is known to continuously evolve its toolsets and techniques to bypass defenses. We should expect to see new variants of this attack leveraging different initial access vectors, such as phishing or software vulnerabilities, as well as more sophisticated credential harvesting and lateral movement techniques."
+  },
+  {
+    "id": "eb1c7310",
+    "created_at": "2026-04-20T01:27:29.485167",
+    "scenario_name": "apt_intrusion",
+    "fingerprint_hash": "d09af3ed9c564ec2",
+    "mitre_techniques": [
+      "T1021"
+    ],
+    "attack_vector": "Credential harvesting, lateral movement",
+    "payload_characteristics": [
+      "PsExec",
+      "RDP connections"
+    ],
+    "behavioral_patterns": [
+      "Lateral movement using SMB and PsExec",
+      "Credential harvesting for privilege escalation",
+      "Attempts to access sensitive servers and domain controllers"
+    ],
+    "countermeasures_applied": [
+      "Block compromised IPs",
+      "Revoke compromised credentials",
+      "Patch vulnerabilities",
+      "Enable MFA on privileged accounts",
+      "Firewall rules to limit access to sensitive servers"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Advanced persistent threat actor gained network access and conducted lateral movement using harvested credentials and PsExec, but was largely contained through a combination of blocking, patching, and access restrictions.",
+    "key_iocs": [
+      "SMB lateral movement",
+      "PsExec detected",
+      "RDP connection"
+    ],
+    "similar_dna_ids": [],
+    "prediction_for_variants": "This APT group is known to continuously evolve its toolset and techniques to bypass defenses. Future variants may use different credential harvesting methods, exploit new vulnerabilities for lateral movement, or find ways to more stealthily establish long-term persistence within the network."
+  },
+  {
+    "id": "3b419b06",
+    "created_at": "2026-04-20T01:27:56.742060",
+    "scenario_name": "Ransomware-Lateral-Movement",
+    "fingerprint_hash": "9e810d7a71022e89",
+    "mitre_techniques": [
+      "T1021"
+    ],
+    "attack_vector": "Remote access via exploited vulnerabilities and credential theft",
+    "payload_characteristics": [
+      "Custom ransomware",
+      "PsExec remote execution",
+      "Cobalt Strike C2 infrastructure"
+    ],
+    "behavioral_patterns": [
+      "Lateral movement using SMB",
+      "Credential dumping with Mimikatz",
+      "Remote control via Cobalt Strike",
+      "Encryption of critical data"
+    ],
+    "countermeasures_applied": [
+      "Block attacker IP addresses",
+      "Terminate PsExec processes",
+      "Patch vulnerabilities",
+      "Enforce MFA",
+      "Alert SOC"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Sophisticated ransomware attack in progress, with lateral movement, credential theft, and encryption of critical data observed. Key countermeasures applied to disrupt the attack, but the attacker was able to partially succeed.",
+    "key_iocs": [
+      "SMB lateral movement",
+      "PsExec detection",
+      "Cobalt Strike C2 infrastructure",
+      "CVE-2021-34473",
+      "CVE-2019-18934"
+    ],
+    "similar_dna_ids": [
+      "eb1c7310"
+    ],
+    "prediction_for_variants": "The attacker group is likely to evolve their tactics to bypass patched vulnerabilities and MFA enforcement, such as by using new exploit techniques or supply chain attacks. We should expect to see variants that target additional vulnerabilities, use new remote execution methods, or employ more advanced credential theft capabilities."
+  },
+  {
+    "id": "bf8e7d7c",
+    "created_at": "2026-04-20T01:29:39.198020",
+    "scenario_name": "Ransomware-variant",
+    "fingerprint_hash": "24dff133c799e1cc",
+    "mitre_techniques": [
+      "T1059",
+      "T1027",
+      "T1071"
+    ],
+    "attack_vector": "Living-off-the-Land techniques, Remote Access, Phishing",
+    "payload_characteristics": [
+      "base64 encoded payload",
+      "invoke-expression",
+      "powershell -enc",
+      "unusual User-Agent"
+    ],
+    "behavioral_patterns": [
+      "Establish remote command and control over DNS and HTTPS",
+      "Lateral movement using privileged accounts",
+      "Encrypt files and demand ransom"
+    ],
+    "countermeasures_applied": [
+      "Block C2 IPs",
+      "Disable suspicious accounts",
+      "Patch known vulnerabilities",
+      "Enable MFA",
+      "Quarantine suspicious files"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Ransomware attack by a financially motivated cybercriminal group using Living-off-the-Land techniques, resulting in significant business disruption but contained through rapid deployment of effective countermeasures.",
+    "key_iocs": [
+      "base64 encoded payload",
+      "invoke-expression",
+      "powershell -enc",
+      "unusual User-Agent",
+      "C2 over DNS",
+      "beaconing over HTTPS"
+    ],
+    "similar_dna_ids": [
+      "8935d7ef"
+    ],
+    "prediction_for_variants": "This threat group is likely to continue evolving their techniques to bypass security controls, such as using more advanced fileless malware, abusing legitimate remote access tools, and leveraging zero-day vulnerabilities. Monitoring for changes in their behavioral patterns, payload characteristics, and indicator sets will be crucial for detecting and responding to variants of this threat."
+  },
+  {
+    "id": "5fe7a36b",
+    "created_at": "2026-04-20T01:30:10.217702",
+    "scenario_name": "APT Intrusion",
+    "fingerprint_hash": "325d7cfc7836e652",
+    "mitre_techniques": [
+      "T1059",
+      "T1027",
+      "T1071"
+    ],
+    "attack_vector": "Remote code execution via vulnerable external-facing servers and network devices",
+    "payload_characteristics": [
+      "Base64 encoded payloads",
+      "Invoke-Expression",
+      "Unusual User-Agent headers"
+    ],
+    "behavioral_patterns": [
+      "Command and control communications over DNS and HTTPS",
+      "Powershell script execution with suspicious arguments",
+      "Attempts to access and move laterally to critical servers"
+    ],
+    "countermeasures_applied": [
+      "Block inbound traffic from identified C2 IPs",
+      "Terminate Powershell processes with IOCs",
+      "Revoke credentials for compromised accounts",
+      "Restrict remote access to critical servers",
+      "Patch known vulnerabilities"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Advanced persistent threat actor gained a foothold on the network through command and control communications and malicious script execution. Significant effort was required to detect, contain, and evict the intruder.",
+    "key_iocs": [
+      "base64 encoded payload",
+      "invoke-expression",
+      "unusual User-Agent",
+      "powershell -enc",
+      "C2 over DNS",
+      "beaconing over HTTPS"
+    ],
+    "similar_dna_ids": [
+      "bf8e7d7c",
+      "8935d7ef"
+    ],
+    "prediction_for_variants": "This APT group is known to frequently update their tools and techniques to bypass defenses. We should expect to see evolved variants that incorporate new evasion methods, alternative C2 protocols, and potentially leveraging additional vulnerabilities in external-facing systems."
+  },
+  {
+    "id": "110ddb8f",
+    "created_at": "2026-04-20T08:29:36.668735",
+    "scenario_name": "apt_intrusion",
+    "fingerprint_hash": "1c0854ddb093b47f",
+    "mitre_techniques": [
+      "T1078",
+      "T1110"
+    ],
+    "attack_vector": "Brute force and credential access techniques",
+    "payload_characteristics": [
+      "Sophisticated malware",
+      "Cobalt Strike toolset"
+    ],
+    "behavioral_patterns": [
+      "Brute force SSH attempts",
+      "Multiple failed logins",
+      "Off-hours authentication",
+      "Login from unusual locations"
+    ],
+    "countermeasures_applied": [
+      "Block IP addresses with failed login attempts",
+      "Enforce MFA on privileged accounts",
+      "Patch vulnerabilities on critical systems",
+      "Restrict remote access with firewall rules and MFA",
+      "Alert SOC to monitor for IOCs"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Sophisticated cyber criminal group used brute force and credential access techniques to gain a foothold on the target network for espionage or further malicious activity.",
+    "key_iocs": [
+      "Brute force attempt",
+      "Multiple failed logins",
+      "Off-hours authentication",
+      "SSH failed attempts",
+      "Login from unusual location"
+    ],
+    "similar_dna_ids": [
+      "0f6c9f97",
+      "ad232534"
+    ],
+    "prediction_for_variants": "This threat group is likely to evolve their toolset and techniques to bypass the applied countermeasures. We should expect to see variants that use new exploits, obfuscation, and more advanced credential access methods."
+  },
+  {
+    "id": "c4751610",
+    "created_at": "2026-04-20T08:30:52.443923",
+    "scenario_name": "APT_Intrusion",
+    "fingerprint_hash": "58faa409a377f06d",
+    "mitre_techniques": [
+      "T1021"
+    ],
+    "attack_vector": "Credential Harvesting, Lateral Movement",
+    "payload_characteristics": [
+      "SMB lateral movement",
+      "RDP connection",
+      "PsExec detected",
+      "PowerShell execution"
+    ],
+    "behavioral_patterns": [
+      "Leverages stolen credentials for lateral movement",
+      "Targets domain controllers and critical servers",
+      "Attempts to exfiltrate sensitive data",
+      "Deploys ransomware or other malware"
+    ],
+    "countermeasures_applied": [
+      "Block IP address of lateral movement activity",
+      "Enforce MFA on privileged user accounts",
+      "Patch known software vulnerabilities",
+      "Deny outbound RDP and PsExec connections from non-trusted hosts",
+      "Quarantine sensitive data files"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Advanced persistent threat (APT) group gained unauthorized access and conducted lateral movement using harvested credentials, targeting domain controllers and critical servers. Counteractions disrupted further malicious activity, but potential for data exfiltration and ransomware deployment remained.",
+    "key_iocs": [
+      "SMB lateral movement",
+      "RDP connection",
+      "PsExec",
+      "PowerShell"
+    ],
+    "similar_dna_ids": [
+      "eb1c7310",
+      "3b419b06"
+    ],
+    "prediction_for_variants": "This APT group is likely to evolve their tactics to bypass the applied countermeasures, such as by leveraging new privilege escalation vulnerabilities, deploying custom malware, or using encrypted communication channels. Continued monitoring for emerging indicators and adjusting defenses accordingly will be crucial."
+  },
+  {
+    "id": "f2aa0d74",
+    "created_at": "2026-04-20T08:31:19.457004",
+    "scenario_name": "Ransomware (targeted)",
+    "fingerprint_hash": "9c760ba62902ca65",
+    "mitre_techniques": [
+      "T1021"
+    ],
+    "attack_vector": "Remote access (RDP), lateral movement (SMB, PsExec)",
+    "payload_characteristics": [
+      "Ransomware payload",
+      "Encrypts critical files",
+      "Exfiltrates data"
+    ],
+    "behavioral_patterns": [
+      "Leverages EternalBlue and BlueKeep vulnerabilities",
+      "Spreads via SMB and PsExec",
+      "Disables security controls to evade detection"
+    ],
+    "countermeasures_applied": [
+      "Blocked attacker IPs",
+      "Disabled compromised user accounts",
+      "Patched vulnerable Windows hosts",
+      "Restricted SMB, RDP, and PsExec traffic",
+      "Alerted the SOC team"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Targeted ransomware campaign leveraged remote access and lateral movement to distribute malware and encrypt critical systems across the network. Significant business disruption and financial impact was mitigated through rapid response and deployment of countermeasures.",
+    "key_iocs": [
+      "SMB lateral movement",
+      "RDP connections",
+      "PsExec usage",
+      "EternalBlue and BlueKeep vulnerabilities"
+    ],
+    "similar_dna_ids": [
+      "eb1c7310",
+      "c4751610",
+      "3b419b06"
+    ],
+    "prediction_for_variants": "As the adversaries behind this ransomware campaign continue to evolve their tactics, we can expect to see them incorporate new remote access vectors, vulnerability exploits, and obfuscation techniques to evade detection and remediation. Monitoring for behavioral indicators like SMB/RDP lateral movement, PowerShell/PsExec abuse, and attempts to disable security controls will be crucial for identifying and responding to future variants of this threat."
+  },
+  {
+    "id": "b87e2b2d",
+    "created_at": "2026-04-26T21:37:01.912652",
+    "scenario_name": "APT-brute-force",
+    "fingerprint_hash": "9adeef8fd6cde3f2",
+    "mitre_techniques": [
+      "T1078",
+      "T1110"
+    ],
+    "attack_vector": "Brute-force attacks targeting valid user accounts",
+    "payload_characteristics": [
+      "Exploitation of valid user credentials",
+      "Network reconnaissance and lateral movement",
+      "Data exfiltration or further system compromise"
+    ],
+    "behavioral_patterns": [
+      "Off-hours authentication attempts",
+      "Multiple failed login attempts",
+      "SSH failed attempts",
+      "Login from unusual geolocations",
+      "Attempts to exploit known vulnerabilities for privilege escalation"
+    ],
+    "countermeasures_applied": [
+      "Block IP addresses with multiple failed logins",
+      "Revoke and reset credentials for suspicious user accounts",
+      "Enable MFA on all user accounts",
+      "Patch known vulnerabilities",
+      "Restrict remote access to critical systems"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "A sophisticated APT actor gained initial access through brute-force attacks targeting valid user accounts, likely with the intent of data exfiltration or further system compromise for long-term persistence.",
+    "key_iocs": [
+      "Off-hours authentication",
+      "Multiple failed logins",
+      "SSH failed attempts",
+      "Login from unusual locations",
+      "Attempts to exploit known vulnerabilities"
+    ],
+    "similar_dna_ids": [
+      "110ddb8f",
+      "0f6c9f97",
+      "ad232534"
+    ],
+    "prediction_for_variants": "The threat actor may evolve their techniques to bypass the applied countermeasures, such as using more advanced credential harvesting methods, exploiting new vulnerabilities, or finding ways to evade detection of their lateral movement and data exfiltration activities."
+  },
+  {
+    "id": "5ddf9bbf",
+    "created_at": "2026-04-26T21:41:08.660136",
+    "scenario_name": "APT-credential-harvest",
+    "fingerprint_hash": "f38073250136c050",
+    "mitre_techniques": [
+      "T1003"
+    ],
+    "attack_vector": "Network intrusion, exploiting software vulnerability",
+    "payload_characteristics": [
+      "procdump -ma lsass",
+      "lsass dump",
+      "mimikatz"
+    ],
+    "behavioral_patterns": [
+      "Credential dumping from LSASS process",
+      "Lateral movement and privilege escalation",
+      "Exfiltration of sensitive data"
+    ],
+    "countermeasures_applied": [
+      "Block network traffic to/from IP addresses performing credential dumping",
+      "Enforce MFA on all domain accounts",
+      "Implement strict firewall rules on domain controllers and high-value servers",
+      "Notify SOC to initiate incident response",
+      "Patch software vulnerabilities exploited by attacker"
+    ],
+    "effectiveness_score": 0.7,
+    "incident_summary": "Advanced persistent threat actor has infiltrated the network and is actively dumping credentials from the LSASS process in preparation for lateral movement and data exfiltration.",
+    "key_iocs": [
+      "procdump -ma lsass",
+      "lsass dump",
+      "mimikatz"
+    ],
+    "similar_dna_ids": [
+      "46e3e996",
+      "89e1235f"
+    ],
+    "prediction_for_variants": "This threat group is known to evolve their tactics and tools over time. We should expect to see variants that use different credential harvesting techniques, perhaps leveraging zero-day vulnerabilities or novel malware to evade detection. Monitoring for any changes in their IOCs and behavioral patterns will be crucial for identifying and responding to future iterations of this threat."
+  },
+  {
+    "id": "0c8a882f",
+    "created_at": "2026-04-26T22:05:57.858939",
+    "scenario_name": "ransomware",
+    "fingerprint_hash": "5c3291fbf8959fc6",
+    "mitre_techniques": [
+      "T1059",
+      "T1027",
+      "T1071"
+    ],
+    "attack_vector": "powershell.exe",
+    "payload_characteristics": [
+      "base64-encoded argument",
+      "unusual User-Agent"
+    ],
+    "behavioral_patterns": [
+      "powershell.exe spawning with base64-encoded argument by explorer.exe",
+      "ransomware attack in progress"
+    ],
+    "countermeasures_applied": [
+      "Block the attacker's known C2 server IP address at the network perimeter",
+      "Kill all running instances of powershell.exe to prevent further execution of malicious commands",
+      "Quarantine all files with base64-encoded content to prevent further execution of malicious code",
+      "Apply the patch for the unpatched vulnerability in PowerShell to prevent further exploitation",
+      "Enable multi-factor authentication (MFA) for all users to prevent further unauthorized access"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Ransomware attack in progress with powershell.exe spawning with base64-encoded argument by explorer.exe",
+    "key_iocs": [
+      "185.220.x.x",
+      "powershell.exe",
+      "base64-encoded argument",
+      "unusual User-Agent"
+    ],
+    "similar_dna_ids": [
+      "bf8e7d7c",
+      "5fe7a36b",
+      "8935d7ef"
+    ],
+    "prediction_for_variants": "The threat may evolve to use other scripting languages or file types, or to exploit different vulnerabilities in the system."
+  },
+  {
+    "id": "2358ece5",
+    "created_at": "2026-04-26T22:23:45.711602",
+    "scenario_name": "ransomware-variant",
+    "fingerprint_hash": "475f6434e018bf06",
+    "mitre_techniques": [
+      "T1486"
+    ],
+    "attack_vector": "exploiting unpatched vulnerabilities",
+    "payload_characteristics": [
+      "custom ransomware toolset",
+      "mass file encryption",
+      ".locked .encrypted file extensions",
+      "ransom note dropped"
+    ],
+    "behavioral_patterns": [
+      "mass file encryption",
+      "ransom note dropped",
+      "lateral movement"
+    ],
+    "countermeasures_applied": [
+      "isolate_host",
+      "kill_process",
+      "quarantine_file",
+      "patch_vulnerability",
+      "revoke_credentials"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Ransomware attack detected with mass file encryption and ransom note dropped. Countermeasures applied include isolating infected hosts, killing the ransomware process, quarantining the ransom note, patching unpatched vulnerabilities, and revoking compromised accounts.",
+    "key_iocs": [
+      "mass file encryption",
+      ".locked .encrypted file extensions",
+      "ransom note dropped"
+    ],
+    "similar_dna_ids": [
+      "c5abf5a0",
+      "24affa5d"
+    ],
+    "prediction_for_variants": "The threat may evolve to use new exploits or vulnerabilities, or to incorporate additional features such as data exfiltration or social engineering tactics."
+  },
+  {
+    "id": "770d6a4a",
+    "created_at": "2026-04-26T22:24:39.989872",
+    "scenario_name": "Ransomware-variant",
+    "fingerprint_hash": "2fa12534de07cb69",
+    "mitre_techniques": [
+      "T1486"
+    ],
+    "attack_vector": "exploiting known vulnerabilities",
+    "payload_characteristics": [
+      "custom ransomware",
+      "mass file encryption",
+      ".locked .encrypted file extensions",
+      "ransom note dropped"
+    ],
+    "behavioral_patterns": [
+      "encrypting files for impact",
+      "demanding ransom",
+      "attempting to escalate privileges",
+      "moving laterally within the network"
+    ],
+    "countermeasures_applied": [
+      "blocking outgoing traffic from compromised systems",
+      "terminating the ransomware process",
+      "isolating compromised systems",
+      "quarantining encrypted files",
+      "patching known vulnerabilities"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "A ransomware attack was detected, with mass file encryption and ransom notes dropped. The attacker's intent was to extort money from the victim by encrypting their files and demanding a ransom.",
+    "key_iocs": [
+      "mass file encryption",
+      ".locked .encrypted file extensions",
+      "ransom note dropped"
+    ],
+    "similar_dna_ids": [
+      "2358ece5",
+      "c5abf5a0",
+      "24affa5d"
+    ],
+    "prediction_for_variants": "The attacker may evolve to use new vulnerabilities, improve their encryption methods, or change their ransom demands."
+  },
+  {
+    "id": "1559ded1",
+    "created_at": "2026-04-26T22:28:56.968164",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "87618773fd8bf93a",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "unknown process svchost32.exe",
+    "payload_characteristics": [
+      "xmrig",
+      "cryptominer process"
+    ],
+    "behavioral_patterns": [
+      "outbound connection on port 3333 to pool.minexmr.com",
+      "CPU spike to 100%",
+      "mining pool connection"
+    ],
+    "countermeasures_applied": [
+      "kill_process svchost32.exe",
+      "block_ip pool.minexmr.com",
+      "firewall_rule port 3333",
+      "quarantine_file xmrig",
+      "alert_soc Security Operations Center"
+    ],
+    "effectiveness_score": 0.9,
+    "incident_summary": "The attacker attempted to hijack the victim's resources for cryptomining using an unknown process svchost32.exe, but was blocked by countermeasures.",
+    "key_iocs": [
+      "svchost32.exe",
+      "pool.minexmr.com",
+      "port 3333",
+      "xmrig"
+    ],
+    "similar_dna_ids": [
+      "9c8705d3",
+      "5006aa7c"
+    ],
+    "prediction_for_variants": "The attacker may evolve to use different mining pools or exploit other vulnerabilities in svchost32.exe."
+  },
+  {
+    "id": "35161e20",
+    "created_at": "2026-04-26T22:29:41.435951",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "87618773fd8bf93a",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "unknown process svchost32.exe",
+    "payload_characteristics": [
+      "consumes 98% CPU",
+      "makes outbound connections to a mining pool"
+    ],
+    "behavioral_patterns": [
+      "utilizes victim's resources for cryptocurrency mining",
+      "uses svchost32.exe to connect to pool.minexmr.com on port 3333"
+    ],
+    "countermeasures_applied": [
+      "block_ip pool.minexmr.com",
+      "kill_process svchost32.exe",
+      "isolate_host Infected host",
+      "patch_vulnerability Unpatched vulnerabilities in networked systems",
+      "enable_mfa Antivirus software"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "A cryptominer infection was detected and blocked, with countermeasures applied to prevent further resource hijacking and lateral movement.",
+    "key_iocs": [
+      "svchost32.exe",
+      "pool.minexmr.com",
+      "port 3333"
+    ],
+    "similar_dna_ids": [
+      "1559ded1",
+      "9c8705d3"
+    ],
+    "prediction_for_variants": "This threat may evolve to use different mining pools or exploit new vulnerabilities to maintain its cryptocurrency mining activities."
+  },
+  {
+    "id": "2e95ce7b",
+    "created_at": "2026-04-26T22:39:54.814415",
+    "scenario_name": "apt_intrusion",
+    "fingerprint_hash": "fe936bb875e7e165",
+    "mitre_techniques": [
+      "T1078",
+      "T1110"
+    ],
+    "attack_vector": "SSH login via brute force",
+    "payload_characteristics": [],
+    "behavioral_patterns": [
+      "Multiple failed SSH logins",
+      "Off-hours authentication",
+      "SSH login from unusual location"
+    ],
+    "countermeasures_applied": [
+      "[block_ip] 203.0.113.77",
+      "[kill_process] SSH login process",
+      "[isolate_host] Affected host",
+      "[patch_vulnerability] System vulnerability",
+      "[enable_mfa] All users"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Nation-state actor gained access to the system via SSH after multiple failed attempts, indicating a potential brute force attack.",
+    "key_iocs": [
+      "203.0.113.77",
+      "SSH login from unusual location",
+      "brute force attempt",
+      "multiple failed logins",
+      "off-hours authentication",
+      "SSH failed attempts"
+    ],
+    "similar_dna_ids": [
+      "110ddb8f",
+      "b87e2b2d",
+      "0f6c9f97"
+    ],
+    "prediction_for_variants": "The threat may evolve to use more sophisticated brute force tactics, such as using AI-powered tools to guess passwords or exploiting zero-day vulnerabilities in SSH protocols."
+  },
+  {
+    "id": "59d0ef6c",
+    "created_at": "2026-04-26T22:42:06.927886",
+    "scenario_name": "apt_intrusion",
+    "fingerprint_hash": "aceaea98cdb6e847",
+    "mitre_techniques": [
+      "T1021"
+    ],
+    "attack_vector": "harvested credentials",
+    "payload_characteristics": [
+      "PsExec"
+    ],
+    "behavioral_patterns": [
+      "lateral movement using PsExec",
+      "SMB and RDP connections"
+    ],
+    "countermeasures_applied": [
+      "block SMB and RDP connections from compromised systems",
+      "kill PsExec processes on compromised systems",
+      "isolate compromised systems from the network",
+      "revoke harvested credentials",
+      "patch unpatched vulnerabilities"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "An APT intrusion was detected with PsExec lateral movement observed on the network. Countermeasures were applied to block SMB and RDP connections, kill PsExec processes, isolate compromised systems, revoke harvested credentials, and patch unpatched vulnerabilities.",
+    "key_iocs": [
+      "PsExec",
+      "psexec",
+      "SMB lateral movement",
+      "RDP connection"
+    ],
+    "similar_dna_ids": [
+      "c4751610",
+      "eb1c7310",
+      "f2aa0d74"
+    ],
+    "prediction_for_variants": "The threat may evolve to use new tools or techniques for lateral movement, such as using Windows Management Instrumentation (WMI) or PowerShell."
+  },
+  {
+    "id": "b4d69f47",
+    "created_at": "2026-04-26T22:43:00.080760",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "2d7e07e47410520d",
+    "mitre_techniques": [
+      "T1021"
+    ],
+    "attack_vector": "RDP connection",
+    "payload_characteristics": [],
+    "behavioral_patterns": [
+      "using PsExec to perform lateral movement using harvested credentials",
+      "SMB lateral movement"
+    ],
+    "countermeasures_applied": [
+      "[block_ip] compromised systems \u2014 Block all incoming and outgoing traffic to and from the compromised systems to prevent further lateral movement.",
+      "[kill_process] psexec \u2014 Kill all running instances of psexec to prevent further lateral movement.",
+      "[isolate_host] compromised systems \u2014 Isolate the compromised systems from the rest of the network to prevent further lateral movement.",
+      "[revoke_credentials] compromised accounts \u2014 Revoke all credentials associated with the compromised accounts to prevent further access.",
+      "[patch_vulnerability] unpatched RDP vulnerability \u2014 Patch the unpatched RDP vulnerability to prevent further exploitation."
+    ],
+    "effectiveness_score": 1.0,
+    "incident_summary": "An adversary has successfully established a foothold in the network through RDP connection and is now using PsExec to perform lateral movement to 10.0.0.20 and 10.0.0.30 using harvested credentials.",
+    "key_iocs": [
+      "RDP connection",
+      "PsExec detected",
+      "psexec",
+      "SMB lateral movement"
+    ],
+    "similar_dna_ids": [
+      "eb1c7310",
+      "59d0ef6c",
+      "c4751610"
+    ],
+    "prediction_for_variants": "The threat may evolve to use other lateral movement techniques, such as WMI or PowerShell, and may target different vulnerabilities in the network."
+  },
+  {
+    "id": "e63d64d3",
+    "created_at": "2026-04-26T22:45:37.030843",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "cfe51e47b8ff41d3",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "unknown",
+    "payload_characteristics": [
+      "custom tools and malware",
+      "high CPU consumption",
+      "outbound connections to mining pool"
+    ],
+    "behavioral_patterns": [
+      "hijacking system resources for cryptocurrency mining",
+      "using svchost32.exe to mine cryptocurrency",
+      "communicating with pool.minexmr.com on port 3333"
+    ],
+    "countermeasures_applied": [
+      "kill_process svchost32.exe",
+      "block_ip pool.minexmr.com",
+      "isolate_host affected host",
+      "patch_vulnerability T1496",
+      "alert_soc Security Operations Center"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "A cryptominer was detected on the system, consuming 98% CPU and making outbound connections to a mining pool. Countermeasures were applied to stop the mining activity and prevent further communication with the mining pool.",
+    "key_iocs": [
+      "svchost32.exe",
+      "pool.minexmr.com",
+      "port 3333",
+      "xmrig"
+    ],
+    "similar_dna_ids": [
+      "1559ded1",
+      "35161e20",
+      "9c8705d3"
+    ],
+    "prediction_for_variants": "The attacker may evolve their tactics by using new custom tools and malware, or by exploiting different vulnerabilities to gain initial access. They may also change their communication protocols or use different mining pools."
+  },
+  {
+    "id": "e4b2b11b",
+    "created_at": "2026-04-26T22:46:20.931718",
+    "scenario_name": "cryptominer",
+    "fingerprint_hash": "e4872886b56c3ef1",
+    "mitre_techniques": [
+      "T1496"
+    ],
+    "attack_vector": "initial access via exploited vulnerability",
+    "payload_characteristics": [
+      "high CPU usage",
+      "outbound connections to mining pool"
+    ],
+    "behavioral_patterns": [
+      "utilizes system resources for cryptocurrency mining",
+      "makes outbound connections to mining pool"
+    ],
+    "countermeasures_applied": [
+      "kill_process svchost32.exe",
+      "block_ip pool.minexmr.com",
+      "firewall_rule port 3333",
+      "patch_vulnerability Unpatched vulnerabilities in networked systems",
+      "enable_mfa Domain controller"
+    ],
+    "effectiveness_score": 0.9,
+    "incident_summary": "A cryptominer malware was detected on the system, consuming 98% CPU and making outbound connections to a mining pool. Countermeasures were applied to terminate the process, block the mining pool IP, and patch vulnerabilities.",
+    "key_iocs": [
+      "svchost32.exe",
+      "pool.minexmr.com",
+      "port 3333",
+      "xmrig"
+    ],
+    "similar_dna_ids": [
+      "1559ded1",
+      "e63d64d3",
+      "35161e20"
+    ],
+    "prediction_for_variants": "The threat actor may evolve to use more sophisticated evasion techniques, such as code obfuscation or anti-debugging methods, to avoid detection. They may also explore alternative mining pools or cryptocurrencies to maintain their illicit activities."
+  },
+  {
+    "id": "81ff031a",
+    "created_at": "2026-04-27T08:35:30.526101",
+    "scenario_name": "ransomware",
+    "fingerprint_hash": "5876783510c3b858",
+    "mitre_techniques": [
+      "T1059",
+      "T1027",
+      "T1071"
+    ],
+    "attack_vector": "DNS tunneling",
+    "payload_characteristics": [
+      "powershell.exe",
+      "base64-encoded argument",
+      "unusual User-Agent"
+    ],
+    "behavioral_patterns": [
+      "invoke-expression",
+      "beaconing over HTTPS"
+    ],
+    "countermeasures_applied": [
+      "block_ip 185.220.x.x",
+      "kill_process powershell.exe",
+      "isolate_host Windows 10 machine with vulnerable software installed",
+      "patch_vulnerability CVE-2022-1234",
+      "enable_mfa Domain controller"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "A ransomware attack was underway, with the attacker attempting to establish command and control (C2) communication with the compromised system via DNS tunneling.",
+    "key_iocs": [
+      "185.220.x.x",
+      "powershell.exe",
+      "base64-encoded argument",
+      "unusual User-Agent"
+    ],
+    "similar_dna_ids": [
+      "0c8a882f",
+      "bf8e7d7c",
+      "5fe7a36b"
+    ],
+    "prediction_for_variants": "The threat may evolve to use other protocols for C2 communication, such as HTTP or FTP, and may incorporate additional evasion techniques to avoid detection."
+  },
+  {
+    "id": "4687d357",
+    "created_at": "2026-04-27T09:01:12.430017",
+    "scenario_name": "Ransomware-LockBit-variant",
+    "fingerprint_hash": "5a7f4b0725390f98",
+    "mitre_techniques": [
+      "T1486"
+    ],
+    "attack_vector": "Spear phishing with custom ransomware tools",
+    "payload_characteristics": [
+      "Mass file encryption",
+      "Ransom note dropped",
+      "Use of .locked and .encrypted file extensions"
+    ],
+    "behavioral_patterns": [
+      "Mass file rename with .locked extension",
+      "Ransom note dropped",
+      "Mass file encryption"
+    ],
+    "countermeasures_applied": [
+      "[block_ip] Attacker's C2 server IP",
+      "[kill_process] Ransomware process",
+      "[isolate_host] Infected hosts",
+      "[revoke_credentials] Compromised user accounts",
+      "[patch_vulnerability] Unpatched software vulnerabilities"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Ransomware attack detected with mass file encryption and ransom note dropped. Nation-state actor with high-level sophistication, motivated by financial gain.",
+    "key_iocs": [
+      "Mass file rename with .locked extension",
+      "Ransom note dropped",
+      "Mass file encryption",
+      ".locked .encrypted file extensions"
+    ],
+    "similar_dna_ids": [
+      "2358ece5",
+      "770d6a4a"
+    ],
+    "prediction_for_variants": "The threat may evolve to use more sophisticated encryption methods, or to target specific industries or organizations."
+  },
+  {
+    "id": "c736cf5d",
+    "created_at": "2026-04-27T09:02:24.220402",
+    "scenario_name": "Ransomware Extortion",
+    "fingerprint_hash": "7f32e69d2c21f73d",
+    "mitre_techniques": [
+      "T1486"
+    ],
+    "attack_vector": "Mass file encryption and ransom note",
+    "payload_characteristics": [
+      "Mass file rename with .locked extension",
+      "Ransom note dropped",
+      "Mass file encryption",
+      ".locked .encrypted file extensions"
+    ],
+    "behavioral_patterns": [
+      "Mass file encryption",
+      "Ransom note dropped",
+      "Data exfiltration"
+    ],
+    "countermeasures_applied": [
+      "[isolate_host] Compromised systems",
+      "[quarantine_file] *.locked, *.encrypted",
+      "[block_ip] Attacker's IP address",
+      "[patch_vulnerability] Unpatched vulnerabilities in network services",
+      "[enable_mfa] All user accounts"
+    ],
+    "effectiveness_score": 0.8,
+    "incident_summary": "Ransomware attack detected with mass file encryption and ransom note dropped. Countermeasures applied include isolating compromised systems, quarantining files, blocking attacker's IP address, patching vulnerabilities, and enabling MFA.",
+    "key_iocs": [
+      "Mass file rename with .locked extension",
+      "Ransom note dropped",
+      "Mass file encryption",
+      ".locked .encrypted file extensions"
+    ],
+    "similar_dna_ids": [
+      "4687d357",
+      "2358ece5",
+      "770d6a4a"
+    ],
+    "prediction_for_variants": "The threat may evolve to use new encryption methods or exploit new vulnerabilities, and may also use social engineering tactics to trick users into installing malware."
+  }
+]

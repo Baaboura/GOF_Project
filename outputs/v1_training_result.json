@@ -1,0 +1,17 @@
+{
+    "model_version": "v1",
+    "training_status": "success",
+    "selected_threshold": 0.12,
+    "metrics": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+    },
+    "model_validation": {
+        "status": "accepted",
+        "reason": "False positive rate below 10%; model deemed acceptable."
+    },
+    "recommendation": "Consider adding more labelled alerts to improve robustness.",
+    "emoji_summary": "\u2705 Model accepted"
+}

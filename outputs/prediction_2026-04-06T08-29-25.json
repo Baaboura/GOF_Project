@@ -1,0 +1,19 @@
+{
+    "prediction_status": "success",
+    "alert_summary": {
+        "alert_type": "malicious_code",
+        "source_agent": "analyzer_agent",
+        "protocol": "HTTP"
+    },
+    "model_output": {
+        "probability": 0.2507,
+        "threshold": 0.12,
+        "exceeds_threshold": true,
+        "decision": 1,
+        "decision_label": "threat"
+    },
+    "risk_level": "low",
+    "emoji_indicator": "\ud83d\udfe2",
+    "explanation": "The alert probability is higher than the selected threshold. The event is classified as a potential threat.",
+    "recommendation": "Trigger analyst review or response workflow."
+}

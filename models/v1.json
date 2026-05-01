@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "threshold": 0.12,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "fpr": 0.0
+}

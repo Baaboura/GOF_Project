@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Adversarial Cognitive Mesh</title>
+  <link rel="stylesheet" href="popup.css"/>
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header>
+    <div class="header-left">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="none" stroke="#00f5d4" stroke-width="1.5"/>
+          <polygon points="14,7 21,11 21,18 14,22 7,18 7,11" fill="none" stroke="#00f5d4" stroke-width="1" opacity="0.5"/>
+          <circle cx="14" cy="14" r="3" fill="#00f5d4"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <div class="app-name">ADVERSARIAL MESH</div>
+        <div class="app-sub">MULTI-AGENT SECURITY</div>
+      </div>
+    </div>
+    <div id="status-badge" class="badge badge-idle">● IDLE</div>
+  </header>
+
+  <!-- ── Tabs ───────────────────────────────────────────────────────────── -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">DASHBOARD</button>
+    <button class="tab" data-tab="threats">THREATS</button>
+    <button class="tab" data-tab="learning">LEARNING</button>
+    <button class="tab" data-tab="settings">SETTINGS</button>
+  </nav>
+
+  <!-- ══ DASHBOARD TAB ══════════════════════════════════════════════════ -->
+  <div id="tab-dashboard" class="tab-content active">
+
+    <!-- Current URL -->
+    <div class="url-bar">
+      <span class="url-icon">🌐</span>
+      <span id="current-url" class="url-text">No site scanned</span>
+    </div>
+
+    <!-- Scan button -->
+    <button id="btn-scan" class="btn-scan">
+      <span id="btn-text">⚡ SCAN CURRENT SITE</span>
+    </button>
+
+    <!-- Download PDF -->
+    <button id="btn-pdf" class="btn-pdf hidden">
+      📄 DOWNLOAD PDF REPORT
+    </button>
+
+    <!-- Agent Pipeline -->
+    <section class="section">
+      <div class="section-title">AGENT PIPELINE</div>
+      <div class="pipeline">
+
+        <div class="pipeline-agent" id="agent-sentinel">
+          <div class="agent-icon">🔍</div>
+          <div class="agent-dot idle" id="dot-sentinel"></div>
+          <div class="agent-label">SENTINEL</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-agent" id="agent-triage">
+          <div class="agent-icon">🧠</div>
+          <div class="agent-dot idle" id="dot-triage"></div>
+          <div class="agent-label">TRIAGE</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-agent" id="agent-red">
+          <div class="agent-icon">💀</div>
+          <div class="agent-dot idle" id="dot-red"></div>
+          <div class="agent-label">RED</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-agent" id="agent-blue">
+          <div class="agent-icon">🛡</div>
+          <div class="agent-dot idle" id="dot-blue"></div>
+          <div class="agent-label">BLUE</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-agent" id="agent-deception">
+          <div class="agent-icon">🎭</div>
+          <div class="agent-dot idle" id="dot-deception"></div>
+          <div class="agent-label">DECEPTION</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-agent" id="agent-memory">
+          <div class="agent-icon">🧬</div>
+          <div class="agent-dot idle" id="dot-memory"></div>
+          <div class="agent-label">MEMORY</div>
+        </div>
+
+      </div>
+      <!-- Agent message -->
+      <div id="agent-message" class="agent-message">Waiting for scan…</div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div id="stat-incidents" class="stat-value red">0</div>
+        <div class="stat-label">INCIDENTS</div>
+      </div>
+      <div class="stat-card">
+        <div id="stat-blocked" class="stat-value cyan">0</div>
+        <div class="stat-label">BLOCKED</div>
+      </div>
+      <div class="stat-card">
+        <div id="stat-warnings" class="stat-value yellow">0</div>
+        <div class="stat-label">WARNINGS</div>
+      </div>
+      <div class="stat-card">
+        <div id="stat-dna" class="stat-value green">0</div>
+        <div class="stat-label">DNA LEARNED</div>
+      </div>
+    </div>
+
+    <!-- Live Activity -->
+    <section class="section">
+      <div class="section-title">LIVE ACTIVITY</div>
+      <div id="activity-feed" class="activity-feed">
+        <div class="activity-empty">
+          <div class="radar-icon">📡</div>
+          <div>Monitoring all traffic…</div>
+          <div class="dim">No threats detected yet.</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══ THREATS TAB ════════════════════════════════════════════════════ -->
+  <div id="tab-threats" class="tab-content">
+    <div class="section-title" style="padding:12px 16px">DETECTED THREATS</div>
+    <div id="threats-list" class="threats-list">
+      <div class="empty-state">No threats recorded yet.<br>Run a scan first.</div>
+    </div>
+  </div>
+
+  <!-- ══ LEARNING TAB ═══════════════════════════════════════════════════ -->
+  <div id="tab-learning" class="tab-content">
+    <div class="section-title" style="padding:12px 16px">THREAT DNA MEMORY</div>
+    <div id="dna-list" class="dna-list">
+      <div class="empty-state">No DNA crystallized yet.<br>Complete a scan to learn.</div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS TAB ═══════════════════════════════════════════════════ -->
+  <div id="tab-settings" class="tab-content">
+    <div class="settings-body">
+      <div class="setting-group">
+        <label class="setting-label">SERVER URL</label>
+        <input id="setting-server" class="setting-input" type="text" value="http://localhost:8765"/>
+        <div class="setting-hint">Local Python server address</div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">DEFAULT SCENARIO</label>
+        <select id="setting-scenario" class="setting-input">
+          <option value="">Auto (random)</option>
+          <option value="ransomware">Ransomware</option>
+          <option value="apt_intrusion">APT Intrusion</option>
+          <option value="cryptominer">Cryptominer</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">SERVER STATUS</label>
+        <div id="server-status" class="server-status checking">Checking…</div>
+      </div>
+      <button id="btn-save-settings" class="btn-save">SAVE SETTINGS</button>
+    </div>
+  </div>
+
+  <!-- ── Server offline banner ──────────────────────────────────────────── -->
+  <div id="offline-banner" class="offline-banner hidden">
+    ⚠ Server offline — run <code>python server.py</code>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
