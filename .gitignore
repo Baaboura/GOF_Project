@@ -2,7 +2,10 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
+
+# Ignore .env file with sensitive information (keep .env.example as template)
 .env
+
 data/threat_memory.json
 outputs/
 *.pdf
