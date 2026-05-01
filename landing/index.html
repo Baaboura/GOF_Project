@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PHAGE — AI-Powered Cybersecurity Extension</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #050a0f;
+      --surface:   #0b1623;
+      --card:      #0f1e2e;
+      --border:    #1a3a5c;
+      --accent:    #00d4ff;
+      --accent2:   #7c3aed;
+      --green:     #00ff88;
+      --red:       #ff4d6d;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --glow:      0 0 40px rgba(0,212,255,.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Grid noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(5,10,15,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+    }
+
+    .logo-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #000 !important;
+      padding: .45rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      transition: box-shadow .2s !important;
+    }
+
+    .nav-cta:hover { box-shadow: var(--glow) !important; color: #000 !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      overflow: hidden;
+    }
+
+    /* radial glows */
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -55%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(0,212,255,.1);
+      border: 1px solid rgba(0,212,255,.3);
+      border-radius: 999px;
+      padding: .35rem 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .5; transform: scale(.8); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      max-width: 620px;
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: linear-gradient(135deg, var(--accent), #0099bb);
+      color: #000;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: .9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 30px rgba(0,212,255,.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(0,212,255,.55);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: transparent;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: .9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* stats strip */
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat { text-align: center; }
+    .stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── SECTION COMMON ── */
+    section { position: relative; z-index: 1; }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: .75rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      max-width: 520px;
+      margin: 1rem auto 0;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      padding: 6rem 2rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .layer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color .2s, transform .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .layer-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .layer-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .layer-card:hover::before { opacity: 1; }
+
+    .layer-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: .5rem;
+    }
+
+    .layer-icon { font-size: 1.8rem; margin-bottom: .75rem; }
+
+    .layer-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+    .layer-card p  { font-size: .88rem; color: var(--muted); }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 7rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .feat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .feat-card:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 0 30px rgba(124,58,237,.15);
+    }
+
+    .feat-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0,212,255,.15), rgba(124,58,237,.15));
+      border: 1px solid rgba(0,212,255,.2);
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+    }
+
+    .feat-card h3 { font-size: 1.05rem; font-weight: 700; }
+    .feat-card p  { font-size: .88rem; color: var(--muted); }
+
+    /* ── INSTALL STEPS ── */
+    .install {
+      padding: 6rem 2rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 40px; height: 40px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #000;
+    }
+
+    .step-body h4 { font-size: 1rem; font-weight: 700; margin-bottom: .25rem; }
+    .step-body p  { font-size: .88rem; color: var(--muted); }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      background: rgba(0,212,255,.08);
+      border: 1px solid rgba(0,212,255,.15);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    /* ── DOWNLOAD CTA ── */
+    .download-cta {
+      padding: 7rem 2rem;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .download-cta h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .download-cta p { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; }
+
+    .download-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,.07) 0%, transparent 70%);
+    }
+
+    .download-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    .meta-item span:first-child { color: var(--green); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .footer-brand p { color: var(--muted); font-size: .88rem; margin-top: .5rem; max-width: 360px; }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .88rem;
+      transition: color .2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 2rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-icon">🛡️</div>
+    <span class="logo-text">PHAGE</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="https://github.com/Baaboura/GOF_Project" target="_blank">GitHub</a></li>
+    <li><a class="nav-cta" href="#download">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <div class="hero-badge">
+    <div class="pulse-dot"></div>
+    AI-Powered Browser Security
+  </div>
+
+  <h1>
+    Stop Threats<br />
+    Before They <span class="highlight">Strike</span>
+  </h1>
+
+  <p>
+    PHAGE is a multi-agent AI extension that monitors every page you visit,
+    detects cyberattacks in real time, and deploys autonomous countermeasures
+    — all inside your browser.
+  </p>
+
+  <div class="hero-actions">
+    <a class="btn-primary" href="#download">
+      ⬇️ Download PHAGE
+    </a>
+    <a class="btn-secondary" href="https://github.com/Baaboura/GOF_Project" target="_blank">
+      ⭐ View on GitHub
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-val">6</div>
+      <div class="stat-label">AI Layers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">31+</div>
+      <div class="stat-label">ATT&CK Techniques</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">&lt;3s</div>
+      <div class="stat-label">Detection Time</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">100%</div>
+      <div class="stat-label">Local &amp; Private</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how" id="how">
+  <div class="section-header">
+    <div class="section-tag">// Architecture</div>
+    <h2>Six AI Agents, One Shield</h2>
+    <p>Each layer of the mesh has a specialized role. Together they form an autonomous defense pipeline.</p>
+  </div>
+
+  <div class="layers">
+    <div class="layer-card">
+      <div class="layer-num">LAYER 01</div>
+      <div class="layer-icon">📡</div>
+      <h3>Sentinel Mesh</h3>
+      <p>Monitors network traffic, DOM mutations, script injections, and file system events to detect suspicious activity across multiple surfaces.</p>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">LAYER 02</div>
+      <div class="layer-icon">🧠</div>
+      <h3>Cognitive Triage</h3>
+      <p>Maps threat events to MITRE ATT&CK techniques, builds a kill-chain narrative, and predicts the attacker's next moves.</p>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">LAYER 03</div>
+      <div class="layer-icon">🔴</div>
+      <h3>Red Agent</h3>
+      <p>Simulates the attacker's perspective to find exploitable gaps and stress-test defenses before the threat fully materialises.</p>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">LAYER 04</div>
+      <div class="layer-icon">🔵</div>
+      <h3>Blue Agent</h3>
+      <p>Generates prioritised countermeasures — blocking rules, isolation commands, patch recommendations — tailored to the specific attack.</p>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">LAYER 05</div>
+      <div class="layer-icon">🕸️</div>
+      <h3>Deception Weaver</h3>
+      <p>Deploys dynamic honeypots and fake assets to lure, mislead, and gather intelligence on the attacker.</p>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">LAYER 06</div>
+      <div class="layer-icon">🧬</div>
+      <h3>Memory Crystallizer</h3>
+      <p>Extracts a Threat DNA fingerprint from every incident and stores it locally so PHAGE gets smarter with every attack it sees.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="features">
+    <div class="section-header">
+      <div class="section-tag">// Features</div>
+      <h2>Everything You Need to Stay Safe</h2>
+      <p>PHAGE combines cutting-edge AI with browser-native power to give you enterprise-grade security as a lightweight extension.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <h3>Real-Time Detection</h3>
+        <p>Identifies ransomware, APT intrusions, cryptominers, and more within seconds of the first suspicious signal.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <h3>Autonomous Response</h3>
+        <p>No manual intervention required. The AI mesh deploys countermeasures automatically based on the attack's severity and type.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📄</div>
+        <h3>PDF Incident Reports</h3>
+        <p>Every scan produces a professional incident report you can download — covering kill-chain stage, countermeasures, and Threat DNA.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <h3>100% Local Processing</h3>
+        <p>Your browsing data never leaves your machine. All analysis runs via a local server you control, with no cloud data collection.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧬</div>
+        <h3>Threat DNA Learning</h3>
+        <p>PHAGE builds a fingerprint of every attack it encounters, growing more effective over time without requiring model retraining.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎛️</div>
+        <h3>Live Dashboard</h3>
+        <p>Watch each of the six AI agents work in real time with a sleek, dark-themed popup dashboard that updates via WebSocket.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── INSTALL STEPS ── -->
+<section class="install" id="install">
+  <div class="section-header">
+    <div class="section-tag">// Quick Start</div>
+    <h2>Up and Running in Minutes</h2>
+    <p>PHAGE runs locally — no account, no cloud, no subscription required.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Download &amp; Extract</h4>
+        <p>Download the PHAGE package below and extract the folder to a permanent location on your machine.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Install Python Dependencies</h4>
+        <p>Inside the project folder, run <code>pip install -r requirements.txt</code> to install all required libraries.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Configure Your API Key</h4>
+        <p>Copy <code>.env.example</code> → <code>.env</code> and paste your OpenRouter or LLMs Factory API key.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Start the Local Server</h4>
+        <p>Run <code>python server.py</code> to start the API server on <code>localhost:8765</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Load the Chrome Extension</h4>
+        <p>Open <code>chrome://extensions</code>, enable Developer Mode, click <em>Load unpacked</em>, and select the <code>extension/</code> folder.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h4>Click the PHAGE Icon &amp; Scan</h4>
+        <p>Navigate to any website, open the PHAGE popup, and click <strong>Scan Current Page</strong> — the AI mesh will do the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DOWNLOAD CTA ── -->
+<section id="download">
+  <div class="download-cta">
+    <h2>Download <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PHAGE</span> Free</h2>
+    <p>Open source, free forever. Built for security researchers, developers, and anyone who values their privacy online.</p>
+
+    <div class="download-box">
+      <div style="font-size:3.5rem;">🛡️</div>
+      <div>
+        <div style="font-size:1.3rem;font-weight:700;margin-bottom:.25rem;">PHAGE Extension</div>
+        <div style="color:var(--muted);font-size:.9rem;">Adversarial Cognitive Mesh — v1.0</div>
+      </div>
+
+      <div class="download-meta">
+        <div class="meta-item"><span>✔</span> Free &amp; Open Source</div>
+        <div class="meta-item"><span>✔</span> Windows / macOS / Linux</div>
+        <div class="meta-item"><span>✔</span> Chrome / Chromium</div>
+        <div class="meta-item"><span>✔</span> No account required</div>
+      </div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+        <a class="btn-primary" href="https://github.com/Baaboura/GOF_Project/archive/refs/heads/main.zip">
+          ⬇️ Download ZIP
+        </a>
+        <a class="btn-secondary" href="https://github.com/Baaboura/GOF_Project" target="_blank">
+          ⭐ Star on GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="nav-logo" href="#" style="display:inline-flex;">
+        <div class="logo-icon">🛡️</div>
+        <span class="logo-text">PHAGE</span>
+      </a>
+      <p style="margin-top:.75rem;">
+        An open-source multi-agent AI cybersecurity extension. Built as a research project at ESPRIT School of Engineering.
+      </p>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/Baaboura/GOF_Project" target="_blank">GitHub</a>
+      <a href="https://github.com/Baaboura/GOF_Project/issues" target="_blank">Support</a>
+      <a href="https://github.com/Baaboura/GOF_Project/blob/main/README.md" target="_blank">Docs</a>
+      <a href="#download">Download</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 PHAGE Project — Adversarial Cognitive Mesh. All rights reserved.</span>
+    <span>Built with ❤️ at <a href="https://esprit.tn" target="_blank" style="color:var(--accent);text-decoration:none;">ESPRIT</a></span>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Animate stats counter on scroll
+  const counters = document.querySelectorAll('.stat-val');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(c => {
+    c.style.opacity = '0';
+    c.style.transform = 'translateY(10px)';
+    c.style.transition = 'opacity .5s, transform .5s';
+    observer.observe(c);
+  });
+
+  // Fade-in layer cards
+  const cards = document.querySelectorAll('.layer-card, .feat-card');
+  const cardObserver = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, 80 * (entry.target.dataset.idx || 0));
+        cardObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  cards.forEach((c, i) => {
+    c.dataset.idx = i % 6;
+    c.style.opacity = '0';
+    c.style.transform = 'translateY(20px)';
+    c.style.transition = `opacity .5s ${i % 6 * 80}ms, transform .5s ${i % 6 * 80}ms`;
+    cardObserver.observe(c);
+  });
+</script>
+</body>
+</html>
