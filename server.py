@@ -84,6 +84,9 @@ class ScanRequest(BaseModel):
     url: str
     scenario: Optional[str] = None   # ransomware | apt_intrusion | cryptominer
 
+class IngestRequest(BaseModel):
+    events: List[Dict]
+
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
@@ -155,6 +158,32 @@ async def start_scan(req: ScanRequest):
     return {"ok": True, "message": "Scan started"}
 
 
+@app.post("/api/ingest")
+async def ingest(req: IngestRequest):
+    """Receive real threat events from the Django middleware."""
+    if not req.events:
+        return {"ok": True}
+
+    # Add to activity feed
+    for ev in req.events:
+        severity = ev.get('severity', 'MEDIUM')
+        level = 'error' if severity == 'CRITICAL' else 'warning' if severity == 'HIGH' else 'info'
+        state.add_activity(f"[{ev['type'].upper()}] {ev['description']}", level)
+
+    await state.broadcast({"type": "real_events", "events": req.events})
+
+    # Trigger AI analysis if not already scanning
+    if state.status != "scanning":
+        first = req.events[0]
+        state.current_url = f"django://localhost{first.get('path','/')}"
+        state.status = "scanning"
+        for agent in state.pipeline:
+            state.pipeline[agent] = {"status": "idle", "message": "—"}
+        asyncio.create_task(_run_real_scan(req.events))
+
+    return {"ok": True, "received": len(req.events)}
+
+
 @app.post("/api/reset")
 async def reset():
     state.status = "idle"
@@ -195,6 +224,88 @@ async def _update_agent(agent: str, status: str, message: str):
         "status": status,
         "message": message,
     })
+
+
+async def _run_real_scan(events: List[Dict]):
+    """Run the AI pipeline on real events from the Django middleware."""
+    try:
+        from core.orchestrator import Orchestrator
+        from core.event_bus import Topic, event_bus
+        from core.models import ThreatEvent, ThreatSeverity
+
+        # Map attack type → scenario for the orchestrator narrative
+        type_to_scenario = {
+            'sql_injection': 'apt_intrusion',
+            'xss':           'apt_intrusion',
+            'brute_force':   'apt_intrusion',
+            'ddos':          'cryptominer',
+            'path_traversal':'apt_intrusion',
+            'scanner':       'apt_intrusion',
+            'sensitive_path':'apt_intrusion',
+        }
+        first_type = events[0].get('type', 'apt_intrusion')
+        scenario = type_to_scenario.get(first_type, 'apt_intrusion')
+
+        await _update_agent("sentinel", "complete",
+            f"{len(events)} real threat event(s) detected — {first_type.replace('_',' ').title()}")
+        state.stats["incidents"] += 1
+
+        orch = Orchestrator()
+        orch.set_scenario(scenario)
+
+        async def ws_status(agent_role, status, message, incident_id):
+            role_map = {"triage":"triage","red":"red","blue":"blue","deception":"deception","memory":"memory"}
+            key = role_map.get(agent_role.value, agent_role.value)
+            await _update_agent(key, "thinking" if status == "thinking" else "complete", message)
+
+        orch._status = ws_status
+
+        result = {}
+        orch.on_report_complete = lambda r: result.update({"report": r})
+
+        event_bus.subscribe(Topic.THREAT_EVENT, orch.on_threat_event)
+        bus_task = asyncio.create_task(event_bus.start())
+
+        # Publish real events to the bus
+        severity_map = {"CRITICAL": ThreatSeverity.CRITICAL, "HIGH": ThreatSeverity.HIGH,
+                        "MEDIUM": ThreatSeverity.MEDIUM, "LOW": ThreatSeverity.LOW}
+        for ev in events:
+            te = ThreatEvent(
+                source="django_middleware",
+                event_type=ev.get("type", "unknown"),
+                description=ev.get("description", ""),
+                severity=severity_map.get(ev.get("severity","MEDIUM"), ThreatSeverity.MEDIUM),
+                raw_data=ev,
+            )
+            await event_bus.publish(Topic.THREAT_EVENT, te)
+
+        for _ in range(600):
+            await asyncio.sleep(0.5)
+            if "report" in result:
+                break
+
+        bus_task.cancel()
+        try:
+            await bus_task
+        except asyncio.CancelledError:
+            pass
+
+        if "report" in result:
+            _save_report(result["report"], state.current_url, scenario)
+            state.status = "complete"
+            state.stats["blocked"] += len(result["report"].blue_response.countermeasures) if result["report"].blue_response else 0
+            state.stats["dna_learned"] += 1
+            state.add_activity(f"Real scan complete — {first_type} resolved", "success")
+            await state.broadcast({"type": "complete", "stats": state.stats})
+        else:
+            state.status = "error"
+            await state.broadcast({"type": "error", "message": "Timeout"})
+
+    except Exception as exc:
+        logger.exception("Real scan failed: %s", exc)
+        state.status = "error"
+        state.add_activity(f"Error: {exc}", "error")
+        await state.broadcast({"type": "error", "message": str(exc)})
 
 
 async def _run_scan(url: str, scenario: Optional[str]):

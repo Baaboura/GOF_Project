@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Admin — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>⚙️ Admin Panel</h1>
+  <p style="color:#94a3b8;margin-bottom:1.5rem;">
+    Accessing this page generates a <span class="badge badge-yellow">MEDIUM</span> alert in PHAGE
+    (unauthorized admin panel access attempt).
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
+    <div style="background:#0f172a;padding:1.5rem;border-radius:10px;">
+      <div style="font-size:2rem;font-weight:700;color:#38bdf8;">142</div>
+      <div style="color:#94a3b8;font-size:.8rem;">Total Users</div>
+    </div>
+    <div style="background:#0f172a;padding:1.5rem;border-radius:10px;">
+      <div style="font-size:2rem;font-weight:700;color:#22c55e;">98%</div>
+      <div style="color:#94a3b8;font-size:.8rem;">Uptime</div>
+    </div>
+    <div style="background:#0f172a;padding:1.5rem;border-radius:10px;">
+      <div style="font-size:2rem;font-weight:700;color:#ef4444;">3</div>
+      <div style="color:#94a3b8;font-size:.8rem;">Alerts</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

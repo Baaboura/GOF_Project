@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Search — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>🔍 Search</h1>
+  <form method="GET">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search anything..." />
+    <button type="submit">Search</button>
+  </form>
+  {% if query %}
+    <div style="margin-top:1.5rem;">
+      <p style="color:#94a3b8;font-size:.85rem;margin-bottom:.75rem;">
+        Results for: <strong style="color:#e2e8f0;">{{ query }}</strong>
+      </p>
+      {% for result in results %}
+        <div style="padding:.75rem;background:#0f172a;border-radius:8px;margin-bottom:.5rem;font-size:.9rem;">
+          {{ result }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

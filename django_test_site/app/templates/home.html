@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Home — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Welcome to PHAGE Test Site</h1>
+  <p style="color:#94a3b8;margin-bottom:1.5rem;">
+    This is a test Django site monitored by PHAGE in real time.
+    Try the pages below to generate real traffic — PHAGE will detect suspicious patterns.
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+    <a class="btn" href="/login/">🔐 Login Page</a>
+    <a class="btn" href="/search/">🔍 Search Page</a>
+    <a class="btn" href="/admin-panel/">⚙️ Admin Panel</a>
+    <a class="btn" href="/api/data/">📡 API Endpoint</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Attack Simulation Tips</h2>
+  <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem;">
+    Use these URLs to simulate real attack patterns that PHAGE will detect:
+  </p>
+  <ul style="color:#94a3b8;font-size:.85rem;line-height:2;list-style:none;">
+    <li>💉 SQL Injection → <code style="color:#f472b6">/search/?q=' OR 1=1 --</code></li>
+    <li>🕷️ XSS → <code style="color:#f472b6">/search/?q=&lt;script&gt;alert(1)&lt;/script&gt;</code></li>
+    <li>📁 Path Traversal → <code style="color:#f472b6">/search/?q=../../etc/passwd</code></li>
+    <li>🔑 Brute Force → POST /login/ repeatedly with wrong credentials</li>
+    <li>🤖 Scanner → Access /admin-panel/ rapidly multiple times</li>
+  </ul>
+</div>
+{% endblock %}
