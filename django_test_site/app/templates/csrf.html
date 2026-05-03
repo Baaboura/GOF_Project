@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}CSRF Simulation — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>🎭 CSRF Attack Simulation</h1>
+  <p style="color:#94a3b8;margin-bottom:1rem;">
+    This page contains a hidden form that auto-submits to <code>/csrf-target/</code>
+    <em>without</em> the Django CSRF token — mimicking a cross-origin forged request.
+    PHAGE should detect the missing token and flag the request.
+  </p>
+
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+    <button onclick="launchCSRF()">🚀 Simulate CSRF Attack</button>
+    <span id="csrf-status" style="color:#94a3b8;font-size:.9rem;align-self:center;">Ready</span>
+  </div>
+
+  <div id="csrf-result" style="display:none;" class="alert alert-danger">
+    CSRF request fired to <code>/csrf-target/</code> — check PHAGE logs.
+  </div>
+</div>
+
+<div class="card">
+  <h2>Legitimate form (with CSRF token)</h2>
+  <p style="color:#94a3b8;font-size:.85rem;margin-bottom:.75rem;">
+    This form includes Django's <code>{% templatetag openblock %} csrf_token {% templatetag closeblock %}</code> — it should succeed normally.
+  </p>
+  <form method="POST" action="/csrf-target/">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="transfer"/>
+    <input type="text" name="amount" value="100" placeholder="Amount"/>
+    <button type="submit" style="margin-top:.75rem;">✔ Legitimate Transfer</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>How it works</h2>
+  <ul style="color:#94a3b8;font-size:.9rem;line-height:1.9;list-style:disc;padding-left:1.2rem;">
+    <li>The attack button fires a POST to <code>/csrf-target/</code> via <code>fetch()</code> with no CSRF header.</li>
+    <li>Django's CSRF middleware rejects it with HTTP 403.</li>
+    <li>PHAGE also intercepts and logs the attempted forged request.</li>
+    <li>The legitimate form below uses the correct token and succeeds (HTTP 200).</li>
+  </ul>
+</div>
+
+<script>
+async function launchCSRF() {
+  document.getElementById('csrf-status').textContent = 'Firing…';
+  try {
+    const res = await fetch('/csrf-target/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'action=transfer&amount=9999'
+      // Intentionally no X-CSRFToken header
+    });
+    document.getElementById('csrf-result').style.display = 'block';
+    document.getElementById('csrf-status').textContent =
+      `Response: HTTP ${res.status} ${res.ok ? '(unexpected success)' : '(blocked — as expected)'}`;
+  } catch (e) {
+    document.getElementById('csrf-status').textContent = 'Error: ' + e.message;
+  }
+}
+</script>
+{% endblock %}

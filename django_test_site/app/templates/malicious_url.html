@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Malicious URL Simulation — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>🔗 Malicious URL Detection Simulation</h1>
+  <p style="color:#94a3b8;margin-bottom:1rem;">
+    Clicking the buttons below sends a request to <code>/malicious-url/</code> with
+    a known-bad URL as a parameter. PHAGE inspects the URL pattern and flags phishing,
+    C2, or payload-delivery indicators.
+  </p>
+  <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;">
+    {% for label, url in targets %}
+    <button onclick="visitMalicious('{{ url|escapejs }}')"
+            style="background:#1e293b;color:#f472b6;border:1px solid #f472b6;padding:.5rem 1rem;border-radius:8px;cursor:pointer;">
+      {{ label }}
+    </button>
+    {% endfor %}
+  </div>
+  <div id="mal-result" style="display:none;" class="alert alert-danger"></div>
+</div>
+
+<div class="card">
+  <h2>Custom URL</h2>
+  <p style="color:#94a3b8;font-size:.85rem;margin-bottom:.75rem;">
+    Enter any URL to test detection manually.
+  </p>
+  <div style="display:flex;gap:.75rem;align-items:flex-start;flex-wrap:wrap;">
+    <input type="text" id="custom-url" value="http://malware-payload.xyz/shell.exe"
+           style="flex:1;font-family:monospace;min-width:260px;" placeholder="http://…"/>
+    <button onclick="visitMalicious(document.getElementById('custom-url').value)">Test URL</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2>How it works</h2>
+  <ul style="color:#94a3b8;font-size:.9rem;line-height:1.9;list-style:disc;padding-left:1.2rem;">
+    <li>Each request goes to <code>/malicious-url/?target=&lt;url&gt;</code>.</li>
+    <li>PHAGE middleware checks the URL against pattern lists: suspicious TLDs, long random subdomains, payload extensions (<code>.exe</code>, <code>.bat</code>), and known phishing keywords.</li>
+    <li>The server returns a JSON response with the detection verdict.</li>
+    <li>Open the extension popup, then click a URL button to see the alert.</li>
+  </ul>
+</div>
+
+<script>
+async function visitMalicious(url) {
+  const el = document.getElementById('mal-result');
+  el.style.display = 'block';
+  el.textContent = 'Sending…';
+  try {
+    const res = await fetch('/malicious-url/?target=' + encodeURIComponent(url));
+    const data = await res.json();
+    el.innerHTML = `<strong>Target:</strong> <code>${escHtml(url)}</code><br>
+                    <strong>Verdict:</strong> ${escHtml(data.verdict)}<br>
+                    <strong>Reason:</strong>  ${escHtml(data.reason)}`;
+    el.className = data.blocked ? 'alert alert-danger' : 'alert alert-success';
+  } catch (e) {
+    el.textContent = 'Error: ' + e.message;
+  }
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+{% endblock %}

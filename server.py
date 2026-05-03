@@ -175,7 +175,7 @@ async def ingest(req: IngestRequest):
     # Trigger AI analysis if not already scanning
     if state.status != "scanning":
         first = req.events[0]
-        state.current_url = f"django://localhost{first.get('path','/')}"
+        state.current_url = f"http://localhost:8000{first.get('path','/')}"
         state.status = "scanning"
         for agent in state.pipeline:
             state.pipeline[agent] = {"status": "idle", "message": "—"}
@@ -231,7 +231,7 @@ async def _run_real_scan(events: List[Dict]):
     try:
         from core.orchestrator import Orchestrator
         from core.event_bus import Topic, event_bus
-        from core.models import ThreatEvent, ThreatSeverity
+        from core.models import ThreatEvent, SeverityLevel
 
         # Map attack type → scenario for the orchestrator narrative
         type_to_scenario = {
@@ -267,14 +267,26 @@ async def _run_real_scan(events: List[Dict]):
         bus_task = asyncio.create_task(event_bus.start())
 
         # Publish real events to the bus
-        severity_map = {"CRITICAL": ThreatSeverity.CRITICAL, "HIGH": ThreatSeverity.HIGH,
-                        "MEDIUM": ThreatSeverity.MEDIUM, "LOW": ThreatSeverity.LOW}
+        # Map Django middleware attack types to sensor_type + confidence
+        type_to_sensor = {
+            "sql_injection": ("api",     0.95),
+            "xss":           ("api",     0.90),
+            "brute_force":   ("network", 0.85),
+            "ddos":          ("network", 0.90),
+            "path_traversal":("api",     0.80),
+            "scanner":       ("network", 0.75),
+            "sensitive_path":("api",     0.70),
+            "csrf":          ("api",     0.85),
+        }
         for ev in events:
+            attack_type = ev.get("type", "unknown")
+            sensor_type, confidence = type_to_sensor.get(attack_type, ("api", 0.70))
             te = ThreatEvent(
-                source="django_middleware",
-                event_type=ev.get("type", "unknown"),
+                sensor_type=sensor_type,
+                confidence=confidence,
                 description=ev.get("description", ""),
-                severity=severity_map.get(ev.get("severity","MEDIUM"), ThreatSeverity.MEDIUM),
+                indicators=[attack_type],
+                source_ip=ev.get("ip"),
                 raw_data=ev,
             )
             await event_bus.publish(Topic.THREAT_EVENT, te)
@@ -308,6 +320,51 @@ async def _run_real_scan(events: List[Dict]):
         await state.broadcast({"type": "error", "message": str(exc)})
 
 
+def _detect_scenario_from_url(url: str) -> str:
+    """Infer the most relevant demo scenario from the scanned URL."""
+    import re
+    u = url.lower()
+
+    # SQL injection indicators
+    if re.search(r"(union\s+select|or\s+1=1|'\s*(or|and)\s*'|--|;\s*drop|sleep\s*\(|benchmark\s*\()", u):
+        return "apt_intrusion"
+
+    # XSS indicators
+    if re.search(r"(<script|onerror=|onload=|javascript:|alert\s*\(|document\.cookie)", u):
+        return "apt_intrusion"
+
+    # Path traversal
+    if re.search(r"(\.\./|\.\.\\|%2e%2e|etc/passwd|etc/shadow|win\.ini)", u):
+        return "apt_intrusion"
+
+    # DDoS / flood (high request rate detected by path)
+    if "/ddos" in u or "/flood" in u:
+        return "cryptominer"  # closest demo: high resource exhaustion
+
+    # CSRF / forged requests
+    if "/csrf" in u:
+        return "apt_intrusion"
+
+    # Malicious URL patterns
+    if re.search(r"\.(exe|bat|cmd|sh|ps1|vbs)(\?|$|%)", u):
+        return "ransomware"
+    if re.search(r"(mining|miner|pool\.|coinhive|cryptonight)", u):
+        return "cryptominer"
+    if re.search(r"(c2|beacon|rat\.|exfil|lateral)", u):
+        return "apt_intrusion"
+
+    # Login / brute force page
+    if "/login" in u or "/auth" in u or "/signin" in u:
+        return "apt_intrusion"
+
+    # Admin panels
+    if "/admin" in u or "/manage" in u or "/panel" in u:
+        return "apt_intrusion"
+
+    import random
+    return random.choice(["ransomware", "apt_intrusion", "cryptominer"])
+
+
 async def _run_scan(url: str, scenario: Optional[str]):
     """Run the full 6-layer agent pipeline."""
     try:
@@ -315,13 +372,18 @@ async def _run_scan(url: str, scenario: Optional[str]):
         from core.event_bus import Topic, event_bus
         from core.orchestrator import Orchestrator
 
-        import random
-        chosen = scenario or random.choice(list(DEMO_SCENARIOS.keys()))
+        chosen = scenario or _detect_scenario_from_url(url)
 
         # ── Sentinel ──────────────────────────────────────────────────────────
+        _SCENARIO_LABELS = {
+            "apt_intrusion": "Intrusion / Web Attack",
+            "ransomware":    "Ransomware / Malware",
+            "cryptominer":   "Resource Abuse / DDoS",
+        }
+        label = _SCENARIO_LABELS.get(chosen, chosen)
         await _update_agent("sentinel", "thinking", f"Scanning {url}…")
         await asyncio.sleep(1.5)
-        await _update_agent("sentinel", "complete", f"5 threat events detected ({chosen})")
+        await _update_agent("sentinel", "complete", f"Threat events detected — {label}")
         state.stats["incidents"] += 1
 
         # Patch orchestrator to broadcast to WS

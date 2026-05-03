@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}XSS Simulation — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>🕷️ Cross-Site Scripting (XSS) Simulation</h1>
+  <p style="color:#94a3b8;margin-bottom:1rem;">
+    Submit a script tag or event-handler payload. The form sends the input to
+    <code>/xss/</code> where the raw value is reflected back in the page (intentionally
+    unsafe for demo purposes). PHAGE should detect the <code>&lt;script&gt;</code> pattern.
+  </p>
+
+  <form method="POST" action="/xss/" style="margin-bottom:1.5rem;">
+    {% csrf_token %}
+    <label style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.4rem;">Comment / input field</label>
+    <input type="text" name="comment" id="xss-input"
+           value='&lt;script&gt;alert("XSS")&lt;/script&gt;'
+           style="font-family:monospace;" placeholder="Enter XSS payload"/>
+    <button type="submit" style="margin-top:.75rem;">📨 Submit Comment</button>
+  </form>
+
+  <h2>Quick-fire payloads</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;">
+    {% for payload in payloads %}
+    <button onclick="setPayload(this.dataset.p)" data-p="{{ payload }}"
+            style="background:#1e293b;color:#f472b6;border:1px solid #f472b6;font-family:monospace;font-size:.8rem;padding:.35rem .75rem;border-radius:6px;cursor:pointer;">
+      {{ payload }}
+    </button>
+    {% endfor %}
+  </div>
+</div>
+
+{% if reflected %}
+<div class="card" style="border-color:#ef4444;">
+  <h2 style="color:#ef4444;">⚠ Reflected Output (unsafe — demo only)</h2>
+  <p style="color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;">
+    Raw input echoed back: <code style="color:#f472b6;">{{ raw_comment }}</code>
+  </p>
+  <div style="background:#0f172a;padding:1rem;border-radius:8px;color:#fca5a5;font-family:monospace;font-size:.85rem;word-break:break-all;">
+    {{ reflected_html }}
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>How it works</h2>
+  <ul style="color:#94a3b8;font-size:.9rem;line-height:1.9;list-style:disc;padding-left:1.2rem;">
+    <li>POST body is scanned for <code>&lt;script&gt;</code>, <code>onerror=</code>, <code>javascript:</code>, etc.</li>
+    <li>PHAGE middleware flags the request before it reaches the view.</li>
+    <li>The view also intentionally reflects the raw input so you can see what a real XSS would look like.</li>
+    <li>Open the extension popup, then submit a payload to see the alert.</li>
+  </ul>
+</div>
+
+<script>
+function setPayload(p) {
+  document.getElementById('xss-input').value = p;
+}
+</script>
+{% endblock %}

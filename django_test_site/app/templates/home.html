@@ -4,9 +4,21 @@
 <div class="card">
   <h1>Welcome to PHAGE Test Site</h1>
   <p style="color:#94a3b8;margin-bottom:1.5rem;">
-    This is a test Django site monitored by PHAGE in real time.
-    Try the pages below to generate real traffic — PHAGE will detect suspicious patterns.
+    A local test site for the <strong>Adversarial Cognitive Mesh</strong> extension.
+    Navigate to any page below, then open the extension popup and click <em>Scan</em>
+    to see real-time threat detection in action.
   </p>
+
+  <h2 style="margin-bottom:.75rem;">⚔️ Attack Simulations</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    <a class="btn" href="/ddos/"          style="background:#7c3aed;color:#fff;">🌊 DDoS Burst</a>
+    <a class="btn" href="/sqli/"          style="background:#dc2626;color:#fff;">💉 SQL Injection</a>
+    <a class="btn" href="/xss/"           style="background:#d97706;color:#fff;">🕷️ XSS Attack</a>
+    <a class="btn" href="/csrf/"          style="background:#0891b2;color:#fff;">🎭 CSRF Forgery</a>
+    <a class="btn" href="/malicious-url/" style="background:#16a34a;color:#fff;">🔗 Malicious URLs</a>
+  </div>
+
+  <h2 style="margin-bottom:.75rem;">🧪 Standard Test Pages</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
     <a class="btn" href="/login/">🔐 Login Page</a>
     <a class="btn" href="/search/">🔍 Search Page</a>
@@ -16,16 +28,16 @@
 </div>
 
 <div class="card">
-  <h2>Attack Simulation Tips</h2>
-  <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem;">
-    Use these URLs to simulate real attack patterns that PHAGE will detect:
-  </p>
-  <ul style="color:#94a3b8;font-size:.85rem;line-height:2;list-style:none;">
+  <h2>Quick-reference payloads</h2>
+  <ul style="color:#94a3b8;font-size:.85rem;line-height:2.2;list-style:none;">
+    <li>🌊 DDoS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → <a href="/ddos/" style="color:#7c3aed;">/ddos/</a> — fires 200 simultaneous requests</li>
     <li>💉 SQL Injection → <code style="color:#f472b6">/search/?q=' OR 1=1 --</code></li>
-    <li>🕷️ XSS → <code style="color:#f472b6">/search/?q=&lt;script&gt;alert(1)&lt;/script&gt;</code></li>
+    <li>🕷️ XSS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → <code style="color:#f472b6">/search/?q=&lt;script&gt;alert(1)&lt;/script&gt;</code></li>
+    <li>🎭 CSRF &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → <a href="/csrf/" style="color:#0891b2;">/csrf/</a> — forged POST without token</li>
+    <li>🔗 Malicious URL → <a href="/malicious-url/" style="color:#16a34a;">/malicious-url/</a> — pattern-matched bad URLs</li>
     <li>📁 Path Traversal → <code style="color:#f472b6">/search/?q=../../etc/passwd</code></li>
-    <li>🔑 Brute Force → POST /login/ repeatedly with wrong credentials</li>
-    <li>🤖 Scanner → Access /admin-panel/ rapidly multiple times</li>
+    <li>🔑 Brute Force &nbsp; → POST /login/ repeatedly with wrong credentials</li>
+    <li>🤖 Scanner &nbsp;&nbsp;&nbsp;&nbsp; → Access /admin-panel/ rapidly multiple times</li>
   </ul>
 </div>
 {% endblock %}

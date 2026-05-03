@@ -88,6 +88,28 @@ async function downloadPdf() {
   }, 2000);
 }
 
+function isLocalhostUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
+  } catch (_) {
+    return false;
+  }
+}
+
+function showLocalhostWarning() {
+  document.getElementById("btn-scan").disabled = true;
+  document.getElementById("btn-text").textContent = "🚫 LOCALHOST ONLY";
+  setBadge("error", "● BLOCKED");
+  const feed = document.getElementById("activity-feed");
+  feed.innerHTML = `
+    <div class="activity-empty">
+      <div class="radar-icon">🔒</div>
+      <div style="color:#f472b6;font-weight:600;">Extension disabled on external sites</div>
+      <div class="dim">This extension only works on localhost or 127.0.0.1.<br>Navigate to a local development site to use scanning.</div>
+    </div>`;
+}
+
 async function getCurrentTab() {
   return new Promise(resolve => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -95,6 +117,9 @@ async function getCurrentTab() {
         const url = tabs[0].url || "";
         document.getElementById("current-url").textContent = url || "—";
         document.getElementById("current-url").title = url;
+        if (!isLocalhostUrl(url)) {
+          showLocalhostWarning();
+        }
       }
       resolve();
     });
@@ -105,6 +130,11 @@ async function startScan() {
   const btn = document.getElementById("btn-scan");
   const urlEl = document.getElementById("current-url");
   const url = urlEl.textContent;
+
+  if (!isLocalhostUrl(url)) {
+    showLocalhostWarning();
+    return;
+  }
 
   const scenario = document.getElementById("setting-scenario").value || null;
 

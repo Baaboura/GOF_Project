@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}DDoS Simulation — PHAGE Test Site{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>🌊 DDoS Attack Simulation</h1>
+  <p style="color:#94a3b8;margin-bottom:1rem;">
+    This page fires a burst of rapid HTTP requests to <code>/api/data/</code>, simulating a
+    volumetric Distributed Denial-of-Service attack. The extension should flag the abnormal
+    request rate as a threat.
+  </p>
+  <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem;">
+    <button id="btn-start" onclick="startDDoS()">⚡ Launch DDoS Burst</button>
+    <button id="btn-stop" onclick="stopDDoS()" style="background:#ef4444;color:#fff;" disabled>■ Stop</button>
+    <span id="status" style="color:#94a3b8;font-size:.9rem;">Idle</span>
+  </div>
+  <div class="card" style="background:#0f172a;">
+    <h2>Request Log</h2>
+    <div id="log" style="font-family:monospace;font-size:.8rem;color:#94a3b8;max-height:250px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>How it works</h2>
+  <ul style="color:#94a3b8;font-size:.9rem;line-height:1.9;list-style:disc;padding-left:1.2rem;">
+    <li>Sends <strong>200 requests</strong> in rapid succession (no delay).</li>
+    <li>All requests target <code>/api/data/</code> — a legitimate endpoint.</li>
+    <li>The high-frequency pattern triggers the PHAGE rate-limit detector.</li>
+    <li>Open the extension popup, then click <em>Launch DDoS Burst</em>.</li>
+  </ul>
+</div>
+
+<script>
+let running = false;
+let sent = 0;
+const TARGET = '/api/data/';
+const BURST  = 200;
+
+async function startDDoS() {
+  running = true;
+  sent = 0;
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-stop').disabled  = false;
+  document.getElementById('status').textContent = 'Attacking…';
+  const log = document.getElementById('log');
+  log.innerHTML = '';
+
+  const promises = [];
+  for (let i = 0; i < BURST && running; i++) {
+    promises.push(
+      fetch(TARGET)
+        .then(r => {
+          sent++;
+          const line = document.createElement('div');
+          line.style.color = r.ok ? '#22c55e' : '#ef4444';
+          line.textContent = `[${new Date().toISOString()}] GET ${TARGET} → ${r.status}  (req #${sent})`;
+          log.prepend(line);
+        })
+        .catch(e => {
+          const line = document.createElement('div');
+          line.style.color = '#ef4444';
+          line.textContent = `[ERROR] ${e.message}`;
+          log.prepend(line);
+        })
+    );
+  }
+  await Promise.all(promises);
+  stopDDoS();
+}
+
+function stopDDoS() {
+  running = false;
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('btn-stop').disabled  = true;
+  document.getElementById('status').textContent = `Done — ${sent} requests sent`;
+}
+</script>
+{% endblock %}
